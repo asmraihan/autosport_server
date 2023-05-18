@@ -53,6 +53,12 @@ async function run() {
         res.send(result)
     })
 
+    app.patch('/updatecar/:id', async (req, res) => {
+        const updatedCar = req.body
+        console.log(updatedCar)
+        // const id = req.params.id
+    })
+
     app.delete('/deletecar/:id', async (req, res) => {
         const id = req.params.id
         const query = { _id: new ObjectId(id)}
