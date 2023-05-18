@@ -26,6 +26,33 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+
+    const carCollection = client.db('autoSport').collection('cars');
+
+    app.get('/allcars', async (req, res) => {
+        const cursor = carCollection.find()
+        const result = await cursor.toArray()
+        res.send(result)
+    })
+    // my cars
+    app.get('/mycars', async (req, res) => {
+        console.log(req.query.email)
+        let query = {}
+        if(req.query.email){
+            query = {email: req.query.email}
+        }
+        const result = await carCollection.find(query).toArray()
+        res.send(result)
+    })
+
+
+    app.post('/addcar', async (req, res) => {
+        const newCar = req.body
+        console.log(newCar)
+        const result = await carCollection.insertOne(newCar)
+        res.send(result)
+    })
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
