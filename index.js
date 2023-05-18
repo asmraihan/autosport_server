@@ -62,9 +62,18 @@ async function run() {
     app.patch('/updatecar/:id', async (req, res) => {
         const id = req.params.id
         const filter = { _id: new ObjectId(id)}
-        
         const updatedCar = req.body
         console.log(updatedCar)
+        const updatedDoc = {
+            $set: {
+                price: updatedCar.price,
+                quantity: updatedCar.quantity,
+                details: updatedCar.details,
+            }
+        }
+        const result = await carCollection.updateOne(filter, updatedDoc)
+        res.send(result)
+                
     })
 
     app.delete('/deletecar/:id', async (req, res) => {
