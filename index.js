@@ -44,7 +44,13 @@ async function run() {
         const result = await carCollection.find(query).toArray()
         res.send(result)
     })
-
+    // get car by id 
+    app.get('/car/:id', async (req, res) => {
+        const id = req.params.id
+        const query = { _id: new ObjectId(id)}
+        const result = await carCollection.findOne(query)
+        res.send(result)
+    })
 
     app.post('/addcar', async (req, res) => {
         const newCar = req.body
@@ -54,9 +60,11 @@ async function run() {
     })
 
     app.patch('/updatecar/:id', async (req, res) => {
+        const id = req.params.id
+        const filter = { _id: new ObjectId(id)}
+        
         const updatedCar = req.body
         console.log(updatedCar)
-        // const id = req.params.id
     })
 
     app.delete('/deletecar/:id', async (req, res) => {
