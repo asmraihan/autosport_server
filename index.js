@@ -27,31 +27,38 @@ async function run() {
 
     const carCollection = client.db('autoSport').collection('cars');
 
-    app.get('/allcars/:limit', async (req, res) => {
+    app.get('/all/:limit', async (req, res) => {
         const count = req.params.limit
         // console.log(parseInt(count))
         const cursor = carCollection.find().limit(parseInt(count))
         const result = await cursor.toArray()
         res.send(result)
     })
+
     // car by category
     app.get('/allcars/:category', async (req, res) => {
-        console.log(req.params.category)
-        // const result = await carCollection.find({category: req.params.category}).toArray()
-        // result will serch by category case insensitive
+        // console.log(req.params.category)
         const result = await carCollection.find({category: {$regex: req.params.category, $options: 'i'}}).toArray()
-        console.log(result)
         res.send(result)
     })
+
     // my cars
-    app.get('/mycars', async (req, res) => {
-        console.log(req.query.email)
-        let query = {}
-        if(req.query.email){
-            query = {email: req.query.email}
+    app.get('/mycars/', async (req, res) => {
+
+        const sort = req.query.sort;
+        const query = {email: req.query.email}
+        
+        if(sort === ''){ 
+            const result = await carCollection.find(query).toArray()
+            res.send(result)
         }
-        const result = await carCollection.find(query).toArray()
-        res.send(result)
+        else if(sort === 'Ascending'){
+            const result = await carCollection.find(query).sort({price: 1}).toArray()
+            res.send(result)
+        }else if(sort === 'Descending'){
+            const result = await carCollection.find(query).sort({price: -1}).toArray()
+            res.send(result)
+        }
     })
     // get car by id 
     app.get('/car/:id', async (req, res) => {
@@ -63,7 +70,6 @@ async function run() {
 
     app.post('/addcar', async (req, res) => {
         const newCar = req.body
-        console.log(newCar)
         const result = await carCollection.insertOne(newCar)
         res.send(result)
     })
@@ -72,7 +78,6 @@ async function run() {
         const id = req.params.id
         const filter = { _id: new ObjectId(id)}
         const updatedCar = req.body
-        console.log(updatedCar)
         const updatedDoc = {
             $set: {
                 price: updatedCar.price,
