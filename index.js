@@ -30,8 +30,17 @@ async function run() {
     const carCollection = client.db('autoSport').collection('cars');
 
     app.get('/allcars', async (req, res) => {
-        const cursor = carCollection.find()
+        const cursor = carCollection.find().limit(20)
         const result = await cursor.toArray()
+        res.send(result)
+    })
+    // car by category
+    app.get('/allcars/:category', async (req, res) => {
+        console.log(req.params.category)
+        // const result = await carCollection.find({category: req.params.category}).toArray()
+        // result will serch by category case insensitive
+        const result = await carCollection.find({category: {$regex: req.params.category, $options: 'i'}}).toArray()
+        console.log(result)
         res.send(result)
     })
     // my cars
