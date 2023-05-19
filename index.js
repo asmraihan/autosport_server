@@ -9,8 +9,6 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.mznotex.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -29,8 +27,10 @@ async function run() {
 
     const carCollection = client.db('autoSport').collection('cars');
 
-    app.get('/allcars', async (req, res) => {
-        const cursor = carCollection.find().limit(20)
+    app.get('/allcars/:limit', async (req, res) => {
+        const count = req.params.limit
+        // console.log(parseInt(count))
+        const cursor = carCollection.find().limit(parseInt(count))
         const result = await cursor.toArray()
         res.send(result)
     })
